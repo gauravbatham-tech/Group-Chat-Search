@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ChatSense — Semantic Chat Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header>
+            <h1>💬 ChatSense</h1>
+            <p>Search your conversations by meaning, person, or time.</p>
+        </header>
+
+        <div class="search-area">
+
+            <input id="query" type="text" placeholder="Try: When did we decide on the trip?"
+                onkeydown="if(event.key === 'Enter') searchMessages()">
+
+            <button onclick="searchMessages()">
+                🔍 Search
+            </button>
+
+        </div>
+
+        <div class="examples">
+            <button onclick="useExample('When did we decide on the trip?')">
+                🏔️ Trip decision
+            </button>
+
+            <button onclick="useExample('What did Priya say about the budget?')">
+                👤 Priya + budget
+            </button>
+
+            <button onclick="useExample('What did we discuss last month?')">
+                📅 Last month
+            </button>
+        </div>
+
+        <div id="loading"></div>
+
+        <div id="results"></div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

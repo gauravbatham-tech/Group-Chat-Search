@@ -1,0 +1,16 @@
+.answer {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.answer h2 {
+    margin-top: 0;
+}
+
+.answer p {
+    font-size: 18px;
+    line-height: 1.6;
+}

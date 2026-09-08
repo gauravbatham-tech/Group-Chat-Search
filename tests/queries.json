@@ -1,0 +1,162 @@
+[
+    {
+        "query": "When did we decide on the trip?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "What destination did we finally choose?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "Which hill station did the group settle on?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "Where were we planning to travel?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "What was the final vacation destination?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "Which place was ultimately confirmed for the trip?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "What did everyone agree to visit?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "Where did the group decide to go for the break?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "What was the approximate cost per person?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "How much money should each person keep for the trip?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "What budget did Aman suggest?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "How expensive was the planned trip?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "What amount did the group consider reasonable?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "What did Priya say about the available dates?",
+        "expected_message_id": 5004
+    },
+    {
+        "query": "What dates was Priya free?",
+        "expected_message_id": 5004
+    },
+    {
+        "query": "Who said they were free from the 20th to 25th?",
+        "expected_message_id": 5004
+    },
+    {
+        "query": "What did Karan offer to check?",
+        "expected_message_id": 5008
+    },
+    {
+        "query": "Who volunteered to check bus tickets?",
+        "expected_message_id": 5008
+    },
+    {
+        "query": "What did Priya say about event expenses?",
+        "expected_message_id": 5011
+    },
+    {
+        "query": "What problem did Aman notice in the expense sheet?",
+        "expected_message_id": 5012
+    },
+    {
+        "query": "Which expense did Priya think was unnecessary?",
+        "expected_message_id": 5013
+    },
+    {
+        "query": "Why was the event spending too high?",
+        "expected_message_id": 5013
+    },
+    {
+        "query": "Who planned to find a cheaper vendor?",
+        "expected_message_id": 5015
+    },
+    {
+        "query": "What project idea did Rohit suggest?",
+        "expected_message_id": 5017
+    },
+    {
+        "query": "What did the team propose building for the final year project?",
+        "expected_message_id": 5017
+    },
+    {
+        "query": "What dataset concern did Anjali raise?",
+        "expected_message_id": 5018
+    },
+    {
+        "query": "How did Rohit respond to the dataset problem?",
+        "expected_message_id": 5019
+    },
+    {
+        "query": "What project was finally selected?",
+        "expected_message_id": 5020
+    },
+    {
+        "query": "What were people discussing last month?",
+        "expected_message_id": 5021
+    },
+    {
+        "query": "What was Rahul doing for placement preparation?",
+        "expected_message_id": 5022
+    },
+    {
+        "query": "What did Priya plan to start?",
+        "expected_message_id": 5023
+    },
+    {
+        "query": "What did Aman suggest doing on weekends?",
+        "expected_message_id": 5024
+    },
+    {
+        "query": "When did they plan the mock interviews?",
+        "expected_message_id": 5025
+    },
+    {
+        "query": "Which mountain destination was locked?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "What place became the final choice?",
+        "expected_message_id": 5009
+    },
+    {
+        "query": "How much should everyone budget individually?",
+        "expected_message_id": 5005
+    },
+    {
+        "query": "Who was going to handle the transportation tickets?",
+        "expected_message_id": 5008
+    },
+    {
+        "query": "What cheaper alternative did the group want for the event?",
+        "expected_message_id": 5015
+    },
+    {
+        "query": "What AI project did the students settle on?",
+        "expected_message_id": 5020
+    },
+    {
+        "query": "What preparation activity was scheduled for Saturday evening?",
+        "expected_message_id": 5025
+    }
+]
