@@ -1,53 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>ChatSense — Semantic Chat Search</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f0e8">
+    <title>ChatSense — Find the meaning in your chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
 
-    <div class="app">
+    <div class="shell">
+        <aside class="sidebar">
+            <a class="brand" href="#top" aria-label="ChatSense home">
+                <span class="brand-mark"><span></span><span></span><span></span></span>
+                <span>Chat<span>Sense</span></span>
+            </a>
 
-        <header>
-            <h1>💬 ChatSense</h1>
-            <p>Search your conversations by meaning, person, or time.</p>
-        </header>
+            <div class="sidebar-rule"></div>
+            <p class="eyebrow">Your conversation archive</p>
+            <div class="archive-card">
+                <div class="archive-icon">⌁</div>
+                <div>
+                    <strong>Friends &amp; plans</strong>
+                    <span>6 months of messages</span>
+                </div>
+                <i class="status-dot"></i>
+            </div>
 
-        <div class="search-area">
+            <nav class="side-nav" aria-label="Workspace navigation">
+                <a class="active" href="#search"><span class="nav-icon">⌕</span> Search messages <kbd>⌘ K</kbd></a>
+                <a href="#results"><span class="nav-icon">◌</span> Recent searches</a>
+            </nav>
 
-            <input id="query" type="text" placeholder="Try: When did we decide on the trip?"
-                onkeydown="if(event.key === 'Enter') searchMessages()">
+            <div class="sidebar-footer">
+                <span class="pulse"></span>
+                <span>Semantic index ready</span>
+                <span class="footer-count">4,000+</span>
+            </div>
+        </aside>
 
-            <button onclick="searchMessages()">
-                🔍 Search
-            </button>
+        <main class="main-content" id="top">
+            <header class="topbar">
+                <div class="breadcrumb"><span>Workspace</span><b>/</b><strong>Search</strong></div>
+                <div class="topbar-meta"><span class="secure-dot"></span> Private local archive <span
+                        class="avatar">GS</span></div>
+            </header>
 
-        </div>
+            <section class="intro" id="search">
+                <div class="intro-copy">
+                    <p class="kicker"><span class="kicker-line"></span> Conversation intelligence</p>
+                    <h1>Remember the moment.<br><em>Find the meaning.</em></h1>
+                    <p class="intro-text">Ask your group chat anything. ChatSense searches by intent, not just exact
+                        words, so the right memory is never buried.</p>
+                </div>
+                <div class="intro-note"><span>⌁</span>
+                    <p>“The best search result<br>is the one that feels<br>like remembering.”</p>
+                </div>
+            </section>
 
-        <div class="examples">
-            <button onclick="useExample('When did we decide on the trip?')">
-                🏔️ Trip decision
-            </button>
+            <section class="search-panel" aria-label="Search conversations">
+                <div class="search-label"><span class="search-spark">✦</span> Ask your archive</div>
+                <div class="search-box">
+                    <span class="search-prefix">⌕</span>
+                    <input id="query" type="text" autocomplete="off" placeholder="When did we decide on the trip?"
+                        aria-label="Search your conversations">
+                    <span class="shortcut">Enter <b>↵</b></span>
+                    <button id="search-button" type="button" onclick="searchMessages()">Search <span>→</span></button>
+                </div>
+                <div class="search-footer">
+                    <span><i class="mini-dot"></i> Meaning-aware search</span>
+                    <span class="query-hint">Try asking about <button
+                            onclick="useExample('When did we decide on the trip?')">decisions</button>, <button
+                            onclick="useExample('What did Priya say about the budget?')">people</button> or <button
+                            onclick="useExample('What did we discuss last month?')">time</button></span>
+                </div>
+            </section>
 
-            <button onclick="useExample('What did Priya say about the budget?')">
-                👤 Priya + budget
-            </button>
+            <section class="example-row" aria-label="Example searches">
+                <p>Start with a thought</p>
+                <button onclick="useExample('When did we decide on the trip?')"><span
+                        class="example-icon yellow">✦</span><span><small>Decision</small>When did we decide on the
+                        trip?</span><b>↗</b></button>
+                <button onclick="useExample('What did Priya say about the budget?')"><span
+                        class="example-icon coral">◎</span><span><small>Person</small>What did Priya say about the
+                        budget?</span><b>↗</b></button>
+                <button onclick="useExample('What did we discuss last month?')"><span
+                        class="example-icon mint">◷</span><span><small>Time</small>What did we discuss last
+                        month?</span><b>↗</b></button>
+            </section>
 
-            <button onclick="useExample('What did we discuss last month?')">
-                📅 Last month
-            </button>
-        </div>
+            <div id="loading" aria-live="polite"></div>
+            <section id="results" aria-live="polite">
+                <div class="empty-state">
+                    <div class="empty-orbit"><span>⌕</span></div>
+                    <h2>Your chat has a memory</h2>
+                    <p>Search above to surface the message, the answer, and the context around it.</p>
+                </div>
+            </section>
 
-        <div id="loading"></div>
-
-        <div id="results"></div>
-
+            <footer class="page-footer"><span>ChatSense</span><span>Built for the conversations that
+                    matter.</span><span>v1.0 / synthetic archive</span></footer>
+        </main>
     </div>
-
     <script src="script.js"></script>
-
 </body>
 
 </html>
