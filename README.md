@@ -1,185 +1,154 @@
-# ChatSense
+# 💬 ChatSense — Semantic Group Chat Search
 
-Semantic search engine for group chat conversations.
+> Search conversations by **meaning, person, and time** — not just keywords.
 
-ChatSense allows users to search a large group-chat dataset using natural-language queries instead of exact keywords.
+ChatSense is an AI-powered semantic search engine built for large group-chat conversations.
 
-## Features
+Instead of requiring users to remember the exact words used in a conversation, ChatSense understands the **meaning of a query** and retrieves the most relevant messages along with their surrounding conversation context.
 
-* Semantic search using sentence embeddings
-* Hybrid semantic + keyword retrieval
-* Search by person
-* Temporal filtering
-* Conversation context around matching messages
-* AI-generated answers using Gemini
-* Hinglish / code-mixed conversation support
-* SQLite message storage
-* FastAPI backend
-* Simple HTML/CSS/JavaScript frontend
+## 🚀 Demo Queries
 
-## Project Structure
+Try queries like:
+
+* **"When did we decide on the trip?"**
+* **"What did Priya say about the budget?"**
+* **"What did we discuss last month?"**
+* **"Which destination did the group finally choose?"**
+
+The system retrieves the relevant conversation and uses Gemini to generate a concise answer based only on the retrieved messages.
+
+## ✨ Features
+
+| Feature              | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| 🧠 Semantic Search   | Finds messages based on meaning                    |
+| 🔎 Hybrid Retrieval  | Combines semantic similarity with keyword matching |
+| 👤 Person Search     | Filter conversations by participant                |
+| 📅 Temporal Search   | Supports queries such as "last month"              |
+| 💬 Context Retrieval | Shows surrounding conversation                     |
+| 🤖 AI Answers        | Generates answers using Gemini                     |
+| 🌐 Hinglish Support  | Handles code-mixed conversations                   |
+| ⚡ Fast API           | FastAPI-powered backend                            |
+
+## 🏗️ Architecture
 
 ```text
-Group-Chat-Search/
-│
-├── backend/
-│   ├── main.py
-│   ├── search.py
-│   ├── database.py
-│   ├── models.py
-│   ├── generate_data.py
-│   ├── create_embeddings.py
-│   └── ai.py
-│
-├── data/
-│   ├── messages.json
-│   ├── chat.db
-│   └── embeddings.npy
-│
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-│
-├── tests/
-│   ├── queries.json
-│   └── evaluate.py
-│
-├── requirements.txt
-├── README.md
-├── .gitignore
-└── .env
+                    ┌─────────────────┐
+                    │     User        │
+                    │     Query       │
+                    └────────┬────────┘
+                             ↓
+                    ┌─────────────────┐
+                    │    FastAPI      │
+                    │    Backend      │
+                    └────────┬────────┘
+                             ↓
+                    ┌─────────────────┐
+                    │ Query Embedding │
+                    └────────┬────────┘
+                             ↓
+              ┌────────────────────────────┐
+              │ Hybrid Retrieval           │
+              │                            │
+              │ Semantic Similarity        │
+              │ + Keyword Matching         │
+              │ + Person/Date Filtering    │
+              └─────────────┬──────────────┘
+                            ↓
+                    ┌─────────────────┐
+                    │ Top Messages +  │
+                    │ Context         │
+                    └────────┬────────┘
+                             ↓
+                    ┌─────────────────┐
+                    │     Gemini      │
+                    │  Answer Engine  │
+                    └────────┬────────┘
+                             ↓
+                    ┌─────────────────┐
+                    │ Answer + Sources│
+                    └─────────────────┘
 ```
 
-## Tech Stack
+## 🛠️ Tech Stack
+
+**Backend**
 
 * Python
 * FastAPI
 * Sentence Transformers
-* FAISS / vector search
 * NumPy
 * SQLite
-* Google Gemini API
+
+**AI**
+
+* Google Gemini
+* Sentence embeddings
+
+**Frontend**
+
 * HTML
 * CSS
 * JavaScript
 
-## How It Works
+**Testing**
+
+* Python
+* Custom retrieval evaluation
+
+## 📁 Project Structure
 
 ```text
-User Query
-    ↓
-FastAPI Backend
-    ↓
-Query Embedding
-    ↓
-Semantic Similarity Search
-    ↓
-Keyword + Metadata Filtering
-    ↓
-Top Matching Messages
-    ↓
-Conversation Context
-    ↓
-Gemini
-    ↓
-Answer + Sources
+Group-Chat-Search/
+│
+├── backend/          # API, search, AI and data processing
+├── data/             # Chat dataset, database and embeddings
+├── frontend/         # Web interface
+├── tests/            # Retrieval evaluation
+├── requirements.txt
+└── README.md
 ```
 
-## Setup
+## ⚙️ Running Locally
 
-### 1. Clone the repository
+### Clone
 
 ```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd Group-Chat-Search
 ```
 
-### 2. Create virtual environment
+### Install
 
 ```bash
 python -m venv venv
-```
-
-Activate it on Git Bash:
-
-```bash
 source venv/Scripts/activate
-```
-
-### 3. Install dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Gemini API
+### Environment Variable
 
-Create a `.env` file:
+Create `.env`:
 
 ```env
 GEMINI_API_KEY=YOUR_API_KEY_HERE
 ```
 
-Never commit `.env` or expose your API key.
-
-### 5. Generate the dataset
-
-```bash
-python backend/generate_data.py
-```
-
-### 6. Create the database
-
-```bash
-python backend/database.py
-```
-
-### 7. Generate embeddings
-
-```bash
-python backend/create_embeddings.py
-```
-
-### 8. Start the backend
+### Start
 
 ```bash
 uvicorn backend.main:app --reload
 ```
 
-The API will run at:
-
-```text
-http://127.0.0.1:8000
-```
-
-### 9. Open the frontend
-
-Open:
+Then open:
 
 ```text
 frontend/index.html
 ```
 
-directly in your browser.
+## 🧪 Evaluation
 
-## Example Queries
-
-```text
-When did we decide on the trip?
-
-What did Priya say about the budget?
-
-What did we discuss last month?
-
-Which destination did the group finally choose?
-
-What did Aman suggest?
-
-Who volunteered to check the tickets?
-```
-
-## Testing
+The project includes a 40-query evaluation set for measuring retrieval performance.
 
 Run:
 
@@ -187,11 +156,44 @@ Run:
 python tests/evaluate.py
 ```
 
-The evaluator checks whether the expected answer message appears in the top-5 retrieved results.
+The evaluator reports **Top-5 Retrieval Accuracy**.
 
-## Important Notes
+## 🎯 Problem Solved
 
-* The dataset is synthetic.
-* The Gemini API key must remain private.
-* The virtual environment must not be committed to Git.
-* Embeddings must be regenerated whenever the dataset changes.
+Traditional chat search depends heavily on exact keywords.
+
+For example, a user may ask:
+
+> "When did we decide on the trip?"
+
+while the actual message might say:
+
+> "Okay guys, Manali it is. Let's book it."
+
+A keyword search can miss this completely.
+
+ChatSense uses semantic embeddings to connect the **intent of the query** with the **meaning of the message**.
+
+## 🔐 Security
+
+API keys and local virtual environments are excluded using `.gitignore`.
+
+Never commit:
+
+```text
+.env
+venv/
+```
+
+## 📌 Project Status
+
+🚧 **In Development**
+
+Core semantic search, metadata filtering, conversation context retrieval, AI answering, synthetic dataset generation, and evaluation infrastructure are implemented.
+
+## 👨‍💻 Author
+
+**Gaurav Batham**
+
+Built as a practical AI/search engineering project demonstrating semantic retrieval, hybrid search, backend API development, and LLM-based question answering.
+
