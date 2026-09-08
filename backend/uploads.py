@@ -74,7 +74,7 @@ def parse_chat_file(filename, raw_content):
     return messages
 
 
-def create_upload(messages):
+def create_upload(messages, user_id):
     chat_id = uuid.uuid4().hex
     embeddings = MODEL.encode(
         [message["message"] for message in messages],
@@ -84,10 +84,12 @@ def create_upload(messages):
     UPLOADS[chat_id] = {
         "messages": messages,
         "embeddings": embeddings,
+        "user_id": user_id,
         "created_at": datetime.utcnow(),
     }
     return chat_id
 
 
-def get_upload(chat_id):
-    return UPLOADS.get(chat_id)
+def get_upload(chat_id, user_id):
+    upload = UPLOADS.get(chat_id)
+    return upload if upload and upload["user_id"] == user_id else None

@@ -18,7 +18,42 @@
     <div class="ambient ambient-one"></div>
     <div class="ambient ambient-two"></div>
 
-    <div class="shell">
+    <section id="auth-gate" class="auth-gate" aria-label="ChatSense account">
+        <div class="auth-aside">
+            <a class="brand auth-brand" href="#"><span
+                    class="brand-mark"><span></span><span></span><span></span></span><span>Chat<span>Sense</span></span></a>
+            <div class="auth-manifesto">
+                <p class="kicker"><span class="kicker-line"></span> Conversation intelligence</p>
+                <h1>Your memories,<br><em>finally findable.</em></h1>
+                <p>Sign in to search your private conversation archive by meaning, person, or time.</p>
+            </div>
+            <div class="auth-quote">“The right message was always there. You just needed a better way to ask.”</div>
+        </div>
+        <div class="auth-card-wrap">
+            <div class="auth-card">
+                <div class="auth-card-heading"><span class="auth-overline" id="auth-overline">Welcome back</span>
+                    <h2 id="auth-title">Sign in to ChatSense</h2>
+                    <p id="auth-subtitle">Your conversation workspace is waiting.</p>
+                </div>
+                <form id="auth-form">
+                    <label id="name-field" class="auth-field is-hidden">Your name<input id="auth-name" type="text"
+                            autocomplete="name" placeholder="e.g. Gaurav"></label>
+                    <label class="auth-field">Email address<input id="auth-email" type="email" autocomplete="email"
+                            placeholder="you@example.com" required></label>
+                    <label class="auth-field">Password<input id="auth-password" type="password"
+                            autocomplete="current-password" placeholder="At least 6 characters" minlength="6"
+                            required></label>
+                    <button class="auth-submit" type="submit" id="auth-submit">Sign in <span>→</span></button>
+                    <p id="auth-error" class="auth-error" role="alert"></p>
+                </form>
+                <p class="auth-switch"><span id="auth-switch-copy">New to ChatSense?</span> <button type="button"
+                        id="auth-switch">Create an account</button></p>
+                <p class="auth-privacy"><span>●</span> Your archive is private to your account</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="shell is-locked" id="app-shell">
         <aside class="sidebar">
             <a class="brand" href="#top" aria-label="ChatSense home">
                 <span class="brand-mark"><span></span><span></span><span></span></span>
@@ -37,8 +72,10 @@
             </div>
 
             <nav class="side-nav" aria-label="Workspace navigation">
-                <a class="active" href="#search"><span class="nav-icon">⌕</span> Search messages <kbd>⌘ K</kbd></a>
-                <a href="#results"><span class="nav-icon">◌</span> Recent searches</a>
+                <a class="active" data-route="home" href="#home"><span class="nav-icon">⌂</span> Overview</a>
+                <a data-route="search" href="#search"><span class="nav-icon">⌕</span> Search messages <kbd>⌘ K</kbd></a>
+                <a data-route="insights" href="#insights"><span class="nav-icon">◌</span> Saved &amp; recent</a>
+                <a data-route="learn" href="#learn"><span class="nav-icon">?</span> How it works</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -53,10 +90,11 @@
                 <div class="breadcrumb"><span>Workspace</span><b>/</b><strong>Search</strong></div>
                 <div class="topbar-meta"><span class="secure-dot"></span> Private local archive <label
                         class="upload-action" for="chat-file">Upload chat <span>↑</span></label><input id="chat-file"
-                        type="file" accept=".txt,.json" hidden><span class="avatar">GS</span></div>
+                        type="file" accept=".txt,.json" hidden><span class="avatar" id="user-avatar">GS</span><button
+                        class="signout-button" id="signout-button" type="button">Sign out</button></div>
             </header>
 
-            <section class="intro" id="search">
+            <section class="intro route-view" id="home" data-view="home">
                 <div class="intro-copy">
                     <p class="kicker"><span class="kicker-line"></span> Conversation intelligence</p>
                     <h1>Remember the moment.<br><em>Find the meaning.</em></h1>
@@ -65,6 +103,41 @@
                 </div>
                 <div class="intro-note"><span>⌁</span>
                     <p>“The best search result<br>is the one that feels<br>like remembering.”</p>
+                </div>
+            </section>
+
+            <section class="home-dashboard route-view" data-view="home">
+                <div class="dashboard-title">
+                    <div>
+                        <p class="kicker"><span class="kicker-line"></span> Your workspace</p>
+                        <h2>Good to see you back.</h2>
+                    </div><a class="quiet-link" href="#search">Open search <span>→</span></a>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-card"><span class="metric-icon coral-bg">⌕</span>
+                        <div><strong id="metric-searches">0</strong><small>questions asked</small></div>
+                    </div>
+                    <div class="metric-card"><span class="metric-icon yellow-bg">✦</span>
+                        <div><strong id="metric-saved">0</strong><small>answers saved</small></div>
+                    </div>
+                    <div class="metric-card"><span class="metric-icon mint-bg">◉</span>
+                        <div><strong id="metric-messages">4,000+</strong><small>messages indexed</small></div>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="launch-card"><span class="launch-eyebrow">Start with a memory</span>
+                        <h3>Ask the question<br>you forgot how to ask.</h3>
+                        <p>Semantic search understands intent, names, dates, and Hinglish context.</p><a
+                            class="dark-button" href="#search">Search your archive <span>→</span></a>
+                    </div>
+                    <div class="recent-card">
+                        <div class="card-heading">
+                            <h3>Recent questions</h3><a href="#insights">View all</a>
+                        </div>
+                        <div id="home-recent" class="recent-list">
+                            <p class="muted-copy">Your questions will appear here after your first search.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -106,6 +179,59 @@
                 <button onclick="useExample('What did we discuss last month?')"><span
                         class="example-icon mint">◷</span><span><small>Time</small>What did we discuss last
                         month?</span><b>↗</b></button>
+            </section>
+
+            <section class="insights-page route-view" id="insights" data-view="insights">
+                <div class="page-heading">
+                    <p class="kicker"><span class="kicker-line"></span> Your trail</p>
+                    <h2>Saved &amp; recent</h2>
+                    <p>Keep the questions and answers worth coming back to.</p>
+                </div>
+                <div class="insights-columns">
+                    <div class="insight-panel">
+                        <div class="card-heading">
+                            <h3>Recent questions</h3><button class="text-button" id="clear-history">Clear
+                                history</button>
+                        </div>
+                        <div id="history-list" class="history-list"></div>
+                    </div>
+                    <div class="insight-panel">
+                        <div class="card-heading">
+                            <h3>Saved answers</h3><span class="count-pill" id="saved-count">0</span>
+                        </div>
+                        <div id="saved-list" class="saved-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="learn-page route-view" id="learn" data-view="learn">
+                <div class="page-heading">
+                    <p class="kicker"><span class="kicker-line"></span> Behind the search</p>
+                    <h2>How ChatSense thinks.</h2>
+                    <p>A simple explanation you can share in a demo, without hiding the interesting parts.</p>
+                </div>
+                <div class="method-grid">
+                    <div class="method-card"><span>01</span>
+                        <h3>Understand the thought</h3>
+                        <p>Your question becomes a meaning vector, so “where are we going?” can find “Manali locked
+                            then”.</p>
+                    </div>
+                    <div class="method-card"><span>02</span>
+                        <h3>Find the signal</h3>
+                        <p>A hybrid ranker combines semantic similarity, useful words, people, and time filters.</p>
+                    </div>
+                    <div class="method-card"><span>03</span>
+                        <h3>Return the moment</h3>
+                        <p>Every match includes nearby messages, because decisions are made in threads, not isolated
+                            lines.</p>
+                    </div>
+                </div>
+                <div class="principle-band"><span>✦</span>
+                    <div><strong>Designed for messy human chat</strong>
+                        <p>Hinglish, typos, one-word replies, forwarded text, and the context that makes a message make
+                            sense.</p>
+                    </div>
+                </div>
             </section>
 
             <div id="loading" aria-live="polite"></div>

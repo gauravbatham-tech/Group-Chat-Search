@@ -5,6 +5,110 @@ const loading = document.getElementById("loading");
 const chatFile = document.getElementById("chat-file");
 const uploadStatus = document.getElementById("upload-status");
 let activeChatId = null;
+const historyKey = "chatsense-history";
+const savedKey = "chatsense-saved";
+const authTokenKey = "chatsense-token";
+const authUserKey = "chatsense-user";
+let authMode = "login";
+const authGate = document.getElementById("auth-gate");
+const appShell = document.getElementById("app-shell");
+const authForm = document.getElementById("auth-form");
+const authSwitch = document.getElementById("auth-switch");
+const authName = document.getElementById("auth-name");
+const authEmail = document.getElementById("auth-email");
+const authPassword = document.getElementById("auth-password");
+const authError = document.getElementById("auth-error");
+
+function getAuthToken() {
+    return sessionStorage.getItem(authTokenKey);
+}
+
+function setAuthSession(data) {
+    sessionStorage.setItem(authTokenKey, data.token);
+    sessionStorage.setItem(authUserKey, JSON.stringify(data.user));
+    const initials = data.user.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+    document.getElementById("user-avatar").textContent = initials;
+    authGate.classList.add("is-hidden");
+    appShell.classList.remove("is-locked");
+    handleRoute();
+}
+
+function showAuthMode(mode) {
+    authMode = mode;
+    const signup = mode === "signup";
+    document.getElementById("auth-overline").textContent = signup ? "Make it yours" : "Welcome back";
+    document.getElementById("auth-title").textContent = signup ? "Create your ChatSense account" : "Sign in to ChatSense";
+    document.getElementById("auth-subtitle").textContent = signup ? "A private home for your conversation memories." : "Your conversation workspace is waiting.";
+    document.getElementById("name-field").classList.toggle("is-hidden", !signup);
+    document.getElementById("auth-submit").innerHTML = signup ? "Create account <span>→</span>" : "Sign in <span>→</span>";
+    document.getElementById("auth-switch-copy").textContent = signup ? "Already have an account?" : "New to ChatSense?";
+    authSwitch.textContent = signup ? "Sign in" : "Create an account";
+    authPassword.setAttribute("autocomplete", signup ? "new-password" : "current-password");
+    authError.textContent = "";
+}
+
+authSwitch.addEventListener("click", () => showAuthMode(authMode === "login" ? "signup" : "login"));
+
+authForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = document.getElementById("auth-submit");
+    submit.disabled = true;
+    authError.textContent = "";
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/auth/${authMode}`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: authName.value, email: authEmail.value, password: authPassword.value })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Authentication failed.");
+        setAuthSession(data);
+        authForm.reset();
+    } catch (error) {
+        authError.textContent = error.message;
+    } finally {
+        submit.disabled = false;
+    }
+});
+
+async function signOut() {
+    const token = getAuthToken();
+    if (token) await fetch("http://127.0.0.1:8000/auth/logout", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+    sessionStorage.removeItem(authTokenKey);
+    sessionStorage.removeItem(authUserKey);
+    activeChatId = null;
+    authGate.classList.remove("is-hidden");
+    appShell.classList.add("is-locked");
+    showAuthMode("login");
+}
+
+document.getElementById("signout-button").addEventListener("click", signOut);
+
+function getHistory() {
+    return JSON.parse(localStorage.getItem(historyKey) || "[]");
+}
+
+function getSaved() {
+    return JSON.parse(localStorage.getItem(savedKey) || "[]");
+}
+
+function routeTo(route) {
+    const activeRoute = route || "home";
+    document.querySelectorAll(".route-view").forEach((view) => {
+        view.classList.toggle("is-hidden", view.dataset.view && view.dataset.view !== activeRoute);
+    });
+    document.querySelectorAll(".side-nav a[data-route]").forEach((link) => {
+        link.classList.toggle("active", link.dataset.route === activeRoute);
+    });
+    if (activeRoute === "home") renderHome();
+    if (activeRoute === "insights") renderInsights();
+}
+
+function handleRoute() {
+    const route = location.hash.replace("#", "") || "home";
+    routeTo(["home", "search", "insights", "learn"].includes(route) ? route : "home");
+}
+
+window.addEventListener("hashchange", handleRoute);
 
 queryInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") searchMessages();
@@ -35,6 +139,52 @@ function searchType(query) {
     return "Semantic search";
 }
 
+function rememberSearch(query, answer) {
+    const next = [{ query, answer, createdAt: new Date().toISOString() }, ...getHistory().filter((item) => item.query !== query)].slice(0, 12);
+    localStorage.setItem(historyKey, JSON.stringify(next));
+}
+
+function renderRecent(targetId, emptyText) {
+    const target = document.getElementById(targetId);
+    const history = getHistory();
+    target.innerHTML = history.length ? history.slice(0, 5).map((item) => `<button class="recent-item" onclick="repeatSearch(${JSON.stringify(item.query)})"><span class="recent-symbol">⌕</span><span>${escapeHtml(item.query)}<small>${formatDate(item.createdAt)}</small></span><b>→</b></button>`).join("") : `<p class="muted-copy">${emptyText}</p>`;
+}
+
+function renderHome() {
+    document.getElementById("metric-searches").textContent = getHistory().length;
+    document.getElementById("metric-saved").textContent = getSaved().length;
+    renderRecent("home-recent", "Your questions will appear here after your first search.");
+}
+
+function renderInsights() {
+    renderRecent("history-list", "No recent questions yet.");
+    const saved = getSaved();
+    document.getElementById("saved-count").textContent = saved.length;
+    document.getElementById("saved-list").innerHTML = saved.length ? saved.map((item, index) => `<article class="saved-item"><div class="saved-item-top"><span>Saved answer ${String(index + 1).padStart(2, "0")}</span><button class="icon-button" onclick="removeSaved(${index})" aria-label="Remove saved answer">×</button></div><h4>${escapeHtml(item.query)}</h4><p>${formatAnswer(item.answer)}</p></article>`).join("") : `<p class="muted-copy">Save an answer from search results to keep it here.</p>`;
+}
+
+function repeatSearch(query) {
+    location.hash = "search";
+    queryInput.value = query;
+    searchMessages();
+}
+
+function saveAnswer(query, answer) {
+    const saved = getSaved();
+    if (!saved.some((item) => item.query === query)) {
+        saved.unshift({ query, answer });
+        localStorage.setItem(savedKey, JSON.stringify(saved.slice(0, 20)));
+    }
+    renderInsights();
+}
+
+function removeSaved(index) {
+    const saved = getSaved();
+    saved.splice(index, 1);
+    localStorage.setItem(savedKey, JSON.stringify(saved));
+    renderInsights();
+}
+
 async function uploadChat() {
     const file = chatFile.files[0];
     if (!file) return;
@@ -45,7 +195,7 @@ async function uploadChat() {
     formData.append("file", file);
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/upload", { method: "POST", body: formData });
+        const response = await fetch("http://127.0.0.1:8000/upload", { method: "POST", headers: { Authorization: `Bearer ${getAuthToken()}` }, body: formData });
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || "Upload failed");
 
@@ -76,11 +226,12 @@ async function searchMessages() {
         if (activeChatId) endpoint.searchParams.set("chat_id", activeChatId);
         const response = await fetch(endpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${getAuthToken()}` },
             body: JSON.stringify({ query, top_k: 5 })
         });
         if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
         const data = await response.json();
+        rememberSearch(query, data.answer || "");
         renderResults(data, query);
     } catch (error) {
         resultsDiv.innerHTML = `<div class="error-state"><strong>Couldn’t reach your archive</strong>Start the FastAPI server at <b>127.0.0.1:8000</b>, then try this search again.</div>`;
@@ -92,6 +243,7 @@ async function searchMessages() {
 
 function renderResults(data, query) {
     const results = Array.isArray(data.results) ? data.results : [];
+    const answer = data.answer || "I couldn't find enough information in the conversation.";
     const cards = results.map((result, index) => {
         const message = result.message || {};
         const context = Array.isArray(result.context) ? result.context : [];
@@ -104,13 +256,27 @@ function renderResults(data, query) {
     }).join("");
 
     resultsDiv.innerHTML = `<div class="results-heading"><h2>What surfaced <span>for you</span></h2><p>${searchType(query)} · ${results.length} sources</p></div>
-        <div class="answer"><div class="answer-mark">✦</div><div><div class="answer-label">ChatSense answer</div><p>${formatAnswer(data.answer || "I couldn't find enough information in the conversation.")}</p></div></div>
+        <div class="answer"><div class="answer-mark">✦</div><div><div class="answer-label">ChatSense answer <button class="save-button" onclick="saveAnswer(${JSON.stringify(query)}, ${JSON.stringify(answer)})">♡ Save answer</button></div><p>${formatAnswer(answer)}</p></div></div>
         <p class="source-label">Evidence from your conversations</p>${cards || `<div class="empty-state"><h2>No messages surfaced</h2><p>Try asking the same thought in a different way.</p></div>`}`;
     resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function useExample(text) {
+    location.hash = "search";
     queryInput.value = text;
     queryInput.focus();
     searchMessages();
+}
+
+document.getElementById("clear-history").addEventListener("click", () => {
+    localStorage.removeItem(historyKey);
+    renderInsights();
+});
+
+if (getAuthToken()) {
+    const savedUser = JSON.parse(sessionStorage.getItem(authUserKey) || "null");
+    if (savedUser) setAuthSession({ token: getAuthToken(), user: savedUser });
+    else showAuthMode("login");
+} else {
+    showAuthMode("login");
 }
