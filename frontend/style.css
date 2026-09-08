@@ -994,3 +994,125 @@ button {
         width: 100%;
     }
 }
+
+.upload-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 12px;
+    padding: 7px 9px;
+    border: 1px solid #c8cabe;
+    border-radius: 5px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .45);
+    cursor: pointer;
+    font-family: "Manrope", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.upload-action span {
+    color: var(--coral);
+    font-size: 15px;
+}
+
+.upload-strip {
+    display: grid;
+    grid-template-columns: 37px 1fr auto;
+    align-items: center;
+    gap: 13px;
+    margin-top: 14px;
+    padding: 13px 15px;
+    border: 1px dashed #c9cbbd;
+    border-radius: 7px;
+    background: rgba(236, 239, 227, .42);
+}
+
+.upload-strip-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #526448;
+    background: #d8e4d1;
+    font-size: 19px;
+}
+
+.upload-strip-copy strong,
+.upload-strip-copy span {
+    display: block;
+}
+
+.upload-strip-copy strong {
+    font-size: 11px;
+}
+
+.upload-strip-copy span {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.upload-strip-copy b {
+    color: var(--ink);
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+}
+
+.upload-button {
+    padding: 8px 11px;
+    border: 1px solid #bec8b7;
+    border-radius: 5px;
+    color: #536448;
+    background: #f6f8f1;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.upload-button span {
+    margin-left: 5px;
+    color: var(--coral);
+    font-size: 13px;
+}
+
+.upload-strip>span:last-child {
+    grid-column: 2 / -1;
+    color: #7d8c77;
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+}
+
+.upload-strip>span.is-loading {
+    color: var(--coral);
+}
+
+@media (max-width: 560px) {
+    .upload-action {
+        margin-left: 0;
+        font-size: 0;
+    }
+
+    .upload-action span {
+        font-size: 18px;
+    }
+
+    .upload-strip {
+        grid-template-columns: 32px 1fr;
+    }
+
+    .upload-strip-copy span {
+        line-height: 1.5;
+    }
+
+    .upload-button {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .upload-strip>span:last-child {
+        grid-column: 2;
+    }
+}

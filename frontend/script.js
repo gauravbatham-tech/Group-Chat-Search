@@ -2,10 +2,15 @@ const queryInput = document.getElementById("query");
 const searchButton = document.getElementById("search-button");
 const resultsDiv = document.getElementById("results");
 const loading = document.getElementById("loading");
+const chatFile = document.getElementById("chat-file");
+const uploadStatus = document.getElementById("upload-status");
+let activeChatId = null;
 
 queryInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") searchMessages();
 });
+
+chatFile.addEventListener("change", uploadChat);
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
@@ -30,6 +35,34 @@ function searchType(query) {
     return "Semantic search";
 }
 
+async function uploadChat() {
+    const file = chatFile.files[0];
+    if (!file) return;
+
+    uploadStatus.textContent = "Reading your archive...";
+    uploadStatus.classList.add("is-loading");
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/upload", { method: "POST", body: formData });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Upload failed");
+
+        activeChatId = data.chat_id;
+        document.getElementById("archive-name").textContent = file.name.replace(/\.(txt|json)$/i, "");
+        document.getElementById("archive-details").textContent = `${data.message_count.toLocaleString()} messages · ${data.participant_count} people`;
+        uploadStatus.textContent = `${data.message_count.toLocaleString()} messages ready`;
+        uploadStatus.classList.remove("is-loading");
+    } catch (error) {
+        uploadStatus.textContent = error.message;
+        uploadStatus.classList.remove("is-loading");
+        activeChatId = null;
+    } finally {
+        chatFile.value = "";
+    }
+}
+
 async function searchMessages() {
     const query = queryInput.value.trim();
     if (!query || searchButton.disabled) return;
@@ -39,7 +72,9 @@ async function searchMessages() {
     resultsDiv.innerHTML = "";
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/search", {
+        const endpoint = new URL("http://127.0.0.1:8000/search");
+        if (activeChatId) endpoint.searchParams.set("chat_id", activeChatId);
+        const response = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query, top_k: 5 })

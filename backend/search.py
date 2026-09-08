@@ -50,12 +50,16 @@ def get_date_filter(query):
     return None, None
 
 
-def search(query, top_k=5, context=2):
+def search(query, top_k=5, context=2, source_messages=None, source_embeddings=None):
+
+    search_messages = source_messages if source_messages is not None else messages
+    search_embeddings = source_embeddings if source_embeddings is not None else embeddings
 
     q = query.lower()
 
+    people = sorted({message["sender"] for message in search_messages})
     person = next(
-        (name for name in PEOPLE if name.lower() in q),
+        (name for name in people if name.lower() in q),
         None
     )
 
@@ -66,7 +70,7 @@ def search(query, top_k=5, context=2):
     # Candidate filtering
     candidates = []
 
-    for i, message in enumerate(messages):
+    for i, message in enumerate(search_messages):
 
         if person and message["sender"] != person:
             continue
@@ -84,13 +88,13 @@ def search(query, top_k=5, context=2):
         normalize_embeddings=True
     )[0]
 
-    semantic_scores = embeddings @ query_embedding
+    semantic_scores = search_embeddings @ query_embedding
 
     ranked_scores = []
 
     for i in candidates:
 
-        message_words = words(messages[i]["message"])
+        message_words = words(search_messages[i]["message"])
 
         if query_words:
             keyword_score = len(
@@ -119,12 +123,12 @@ def search(query, top_k=5, context=2):
     for index, score in ranked_scores[:top_k]:
 
         start = max(0, index - context)
-        end = min(len(messages), index + context + 1)
+        end = min(len(search_messages), index + context + 1)
 
         results.append({
-            "message": messages[index],
+            "message": search_messages[index],
             "score": round(score, 4),
-            "context": messages[start:end]
+            "context": search_messages[start:end]
         })
 
     return results
