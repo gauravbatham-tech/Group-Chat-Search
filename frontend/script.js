@@ -5,8 +5,8 @@ const loading = document.getElementById("loading");
 const chatFile = document.getElementById("chat-file");
 const uploadStatus = document.getElementById("upload-status");
 let activeChatId = null;
-const historyKey = "chatsense-history";
-const savedKey = "chatsense-saved";
+const legacyHistoryKey = "chatsense-history";
+const legacySavedKey = "chatsense-saved";
 const authTokenKey = "chatsense-token";
 const authUserKey = "chatsense-user";
 let authMode = "login";
@@ -23,6 +23,26 @@ function getAuthToken() {
     return sessionStorage.getItem(authTokenKey);
 }
 
+function getAuthUser() {
+    return JSON.parse(sessionStorage.getItem(authUserKey) || "null");
+}
+
+function getAccountKey(prefix) {
+    const email = getAuthUser()?.email?.trim().toLowerCase();
+    return email ? `${prefix}:${encodeURIComponent(email)}` : null;
+}
+
+function clearWorkspaceView() {
+    activeChatId = null;
+    queryInput.value = "";
+    resultsDiv.innerHTML = "";
+    loading.innerHTML = "";
+    uploadStatus.textContent = "No archive loaded";
+    uploadStatus.classList.remove("is-loading");
+    document.getElementById("archive-name").textContent = "No archive loaded";
+    document.getElementById("archive-details").textContent = "Upload a chat export to begin searching";
+}
+
 function setAuthSession(data) {
     sessionStorage.setItem(authTokenKey, data.token);
     sessionStorage.setItem(authUserKey, JSON.stringify(data.user));
@@ -30,6 +50,7 @@ function setAuthSession(data) {
     document.getElementById("user-avatar").textContent = initials;
     authGate.classList.add("is-hidden");
     appShell.classList.remove("is-locked");
+    clearWorkspaceView();
     handleRoute();
 }
 
@@ -75,7 +96,7 @@ async function signOut() {
     if (token) await fetch("http://127.0.0.1:8000/auth/logout", { method: "POST", headers: { Authorization: `Bearer ${token}` } });
     sessionStorage.removeItem(authTokenKey);
     sessionStorage.removeItem(authUserKey);
-    activeChatId = null;
+    clearWorkspaceView();
     authGate.classList.remove("is-hidden");
     appShell.classList.add("is-locked");
     showAuthMode("login");
@@ -84,11 +105,13 @@ async function signOut() {
 document.getElementById("signout-button").addEventListener("click", signOut);
 
 function getHistory() {
-    return JSON.parse(localStorage.getItem(historyKey) || "[]");
+    const key = getAccountKey("chatsense-history");
+    return key ? JSON.parse(localStorage.getItem(key) || "[]") : [];
 }
 
 function getSaved() {
-    return JSON.parse(localStorage.getItem(savedKey) || "[]");
+    const key = getAccountKey("chatsense-saved");
+    return key ? JSON.parse(localStorage.getItem(key) || "[]") : [];
 }
 
 function routeTo(route) {
@@ -141,7 +164,8 @@ function searchType(query) {
 
 function rememberSearch(query, answer) {
     const next = [{ query, answer, createdAt: new Date().toISOString() }, ...getHistory().filter((item) => item.query !== query)].slice(0, 12);
-    localStorage.setItem(historyKey, JSON.stringify(next));
+    const key = getAccountKey("chatsense-history");
+    if (key) localStorage.setItem(key, JSON.stringify(next));
 }
 
 function renderRecent(targetId, emptyText) {
@@ -173,7 +197,8 @@ function saveAnswer(query, answer) {
     const saved = getSaved();
     if (!saved.some((item) => item.query === query)) {
         saved.unshift({ query, answer });
-        localStorage.setItem(savedKey, JSON.stringify(saved.slice(0, 20)));
+        const key = getAccountKey("chatsense-saved");
+        if (key) localStorage.setItem(key, JSON.stringify(saved.slice(0, 20)));
     }
     renderInsights();
 }
@@ -181,7 +206,8 @@ function saveAnswer(query, answer) {
 function removeSaved(index) {
     const saved = getSaved();
     saved.splice(index, 1);
-    localStorage.setItem(savedKey, JSON.stringify(saved));
+    const key = getAccountKey("chatsense-saved");
+    if (key) localStorage.setItem(key, JSON.stringify(saved));
     renderInsights();
 }
 
@@ -269,12 +295,16 @@ function useExample(text) {
 }
 
 document.getElementById("clear-history").addEventListener("click", () => {
-    localStorage.removeItem(historyKey);
+    const key = getAccountKey("chatsense-history");
+    if (key) localStorage.removeItem(key);
     renderInsights();
 });
 
+localStorage.removeItem(legacyHistoryKey);
+localStorage.removeItem(legacySavedKey);
+
 if (getAuthToken()) {
-    const savedUser = JSON.parse(sessionStorage.getItem(authUserKey) || "null");
+    const savedUser = getAuthUser();
     if (savedUser) setAuthSession({ token: getAuthToken(), user: savedUser });
     else showAuthMode("login");
 } else {
